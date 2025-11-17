@@ -1,9 +1,10 @@
 package main
 
 import (
+	"crypto/rand"
 	"flag"
 	"fmt"
-	"math/rand"
+	"math/big"
 
 	"github.com/atotto/clipboard"
 	"github.com/fatih/color"
@@ -16,16 +17,24 @@ const Symbols = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
 func generatePassword(length int, digits bool, symbols bool) string {
 	password := make([]rune, length)
 
-	for i := range length {
-		options := Letters
+	pool := Letters
 
-		if digits {
-			options += Digits
+	if digits {
+		pool += Digits
+	}
+	if symbols {
+		pool += Symbols
+	}
+
+	poolLength := big.NewInt(int64(len([]rune(pool))))
+	poolRunes := []rune(pool)
+
+	for i := range length {
+		n, err := rand.Int(rand.Reader, poolLength)
+		if err != nil {
+			panic(err)
 		}
-		if symbols {
-			options += Symbols
-		}
-		password[i] = rune(options[rand.Intn(len(options))])
+		password[i] = poolRunes[n.Int64()]
 	}
 	return string(password)
 
