@@ -35,12 +35,16 @@ func main() {
 	length := flag.Int("length", 12, "Length of the password (default: 12)")
 	digits := flag.Bool("digits", true, "Include digits in the password")
 	symbols := flag.Bool("symbols", false, "Include symbols in the password")
+	copy := flag.Bool("copy", true, "Enable or disable copying the password to the clipboard")
+
 	flag.Parse()
 
 	password := generatePassword(*length, *digits, *symbols)
 
-	clipboard.WriteAll(password)
+	if *copy {
+		clipboard.WriteAll(password)
+		fmt.Print("Password copied! ")
+	}
 
-	fmt.Print("Password copied! ")
 	color.Green("%s", password)
 }
